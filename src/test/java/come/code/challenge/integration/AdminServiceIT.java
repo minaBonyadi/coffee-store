@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -21,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = ChallengeApplication.class)
 @AutoConfigureMockMvc
-class UserServiceTests {
+class AdminServiceIT {
 
 	final java.lang.String ADMIN_API= "/admin/menu";
 
@@ -39,7 +38,6 @@ class UserServiceTests {
         //************************
         //          Given
         //************************
-//        userRepository.deleteAll();
 
 		String requestBody = "{\"name\":\"latte\",\"price\":50,\"itemType\":\"DRINK\"}";
 

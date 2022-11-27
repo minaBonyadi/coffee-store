@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class MenuItem {
+public class MenuItemRequest {
 
     private Long id;
 

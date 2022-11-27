@@ -1,13 +1,14 @@
 package com.bestseller.coffeestore.admin;
 
-import com.bestseller.coffeestore.admin.dto.MenuItem;
+import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
 
 public interface AdminMenuService {
 
-	void addItem(MenuItem item);
+	void addItem(MenuItemRequest item);
 
-    void updateItem(MenuItem item);
+    void updateItem(MenuItemRequest item);
 
-    void deleteItem(MenuItem item);
+    void deleteItem(MenuItemRequest item);
 
+	void orderReport();
 }

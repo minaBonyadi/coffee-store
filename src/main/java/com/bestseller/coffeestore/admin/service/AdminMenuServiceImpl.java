@@ -1,13 +1,22 @@
 package com.bestseller.coffeestore.admin.service;
 
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
 import com.bestseller.coffeestore.admin.AdminMenuMapper;
 import com.bestseller.coffeestore.admin.AdminMenuService;
 import com.bestseller.coffeestore.admin.dto.ItemType;
-import com.bestseller.coffeestore.admin.dto.MenuItem;
+import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
+import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
 import com.bestseller.coffeestore.admin.model.Drink;
+import com.bestseller.coffeestore.admin.model.Order;
 import com.bestseller.coffeestore.admin.model.Topping;
 import com.bestseller.coffeestore.admin.repository.DrinkRepository;
+import com.bestseller.coffeestore.admin.repository.OrderRepository;
 import com.bestseller.coffeestore.admin.repository.ToppingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +32,10 @@ public class AdminMenuServiceImpl implements AdminMenuService {
     private final DrinkRepository drinkRepository;
     private final ToppingRepository toppingRepository;
 
+	private final OrderRepository orderRepository;
+
     @Override
-    public void addItem(MenuItem item) {
+    public void addItem(MenuItemRequest item) {
         log.info("gonna add an item to a menu");
         if (item.getItemType().equals(ItemType.DRINK)) {
             Drink drink = mapper.toDrink(item);
@@ -39,7 +50,7 @@ public class AdminMenuServiceImpl implements AdminMenuService {
     }
 
     @Override
-    public void updateItem(MenuItem item) {
+    public void updateItem(MenuItemRequest item) {
 		log.info("gonna update a menu item");
 
         if (item.getItemType().equals(ItemType.DRINK)) {
@@ -57,7 +68,7 @@ public class AdminMenuServiceImpl implements AdminMenuService {
         }
     }
 	@Override
-    public void deleteItem(MenuItem item) {
+    public void deleteItem(MenuItemRequest item) {
 		log.info("gonna delete a menu item");
 
 		if (item.getItemType().equals(ItemType.DRINK)) {
@@ -73,5 +84,21 @@ public class AdminMenuServiceImpl implements AdminMenuService {
                     topping.getName());
         }
     }
+
+	@Override
+	public void orderReport() {
+		List<Order> orderList = orderRepository.findAll();
+
+		var results = orderList.stream()
+				.collect(Collectors.groupingBy(Order::getDrink)).entrySet().stream()
+				.collect(Collectors.toMap(Entry::getKey, entry-> entry.getValue().stream().map(Order::getToppings)
+						.flatMap(Collection::stream).toList()));
+
+		var mostRepeatedTopping = results.entrySet().stream().max(Comparator.comparing(Entry::getValue)).get();
+
+		OrderReportResponse response = new OrderReportResponse();
+		response.setOrderReports(mostRepeatedTopping.getKey(), mostRepeatedTopping.getValue());
+
+	}
 
 }

@@ -4,7 +4,8 @@ import javax.validation.Valid;
 
 import com.bestseller.coffeestore.admin.AdminMenuService;
 import com.bestseller.coffeestore.admin.dto.GeneralResponse;
-import com.bestseller.coffeestore.admin.dto.MenuItem;
+import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
+import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,22 +27,29 @@ public class AdminMenuResource {
 	private final AdminMenuService adminMenuService;
 
 	@PostMapping
-	ResponseEntity<GeneralResponse> create(@RequestBody @Valid MenuItem item) {
+	ResponseEntity<GeneralResponse> create(@RequestBody @Valid MenuItemRequest item) {
 		adminMenuService.addItem(item);
 		log.info("add a menu item successfully");
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PutMapping
-	ResponseEntity<GeneralResponse> update(@RequestBody @Valid MenuItem item) {
+	ResponseEntity<GeneralResponse> update(@RequestBody @Valid MenuItemRequest item) {
 		adminMenuService.updateItem(item);
 		log.info("update menu item successfully");
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@DeleteMapping()
-	ResponseEntity<GeneralResponse> delete(@RequestBody MenuItem menuItem) {
-		adminMenuService.deleteItem(menuItem);
+	ResponseEntity<GeneralResponse> delete(@RequestBody MenuItemRequest menuItemRequest) {
+		adminMenuService.deleteItem(menuItemRequest);
+		log.info("delete from menu item successfully");
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/order-report")
+	ResponseEntity<OrderReportResponse> getOrderReports() {
+		adminMenuService.orderReport();
 		log.info("delete from menu item successfully");
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
