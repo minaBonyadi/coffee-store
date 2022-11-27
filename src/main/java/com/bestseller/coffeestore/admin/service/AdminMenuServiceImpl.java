@@ -2,16 +2,17 @@ package com.bestseller.coffeestore.admin.service;
 
 
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.bestseller.coffeestore.admin.AdminMenuMapper;
 import com.bestseller.coffeestore.admin.AdminMenuService;
 import com.bestseller.coffeestore.admin.dto.ItemType;
 import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
-import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
 import com.bestseller.coffeestore.admin.model.Drink;
 import com.bestseller.coffeestore.admin.model.Order;
 import com.bestseller.coffeestore.admin.model.Topping;
@@ -94,11 +95,24 @@ public class AdminMenuServiceImpl implements AdminMenuService {
 				.collect(Collectors.toMap(Entry::getKey, entry-> entry.getValue().stream().map(Order::getToppings)
 						.flatMap(Collection::stream).toList()));
 
-		var mostRepeatedTopping = results.entrySet().stream().max(Comparator.comparing(Entry::getValue)).get();
-
-		OrderReportResponse response = new OrderReportResponse();
-		response.setOrderReports(mostRepeatedTopping.getKey(), mostRepeatedTopping.getValue());
-
+		mostCommon(results.values().stream().flatMap(Collection::stream).toList());
 	}
 
+	private Topping mostCommon(List<Topping> list) {
+		Map<Topping, Integer> map = new HashMap<>();
+
+		for (Topping t : list) {
+			Integer val = map.get(t);
+			map.put(t, val == null ? 1 : val + 1);
+		}
+
+		Entry<Topping, Integer> max = null;
+
+		for (Entry<Topping, Integer> e : map.entrySet()) {
+			if (max == null || e.getValue() > max.getValue())
+				max = e;
+		}
+
+		return Objects.requireNonNull(max).getKey();
+	}
 }
