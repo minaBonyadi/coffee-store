@@ -1,18 +1,17 @@
 package com.bestseller.coffeestore.admin.service;
 
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.bestseller.coffeestore.admin.AdminMenuMapper;
 import com.bestseller.coffeestore.admin.AdminMenuService;
 import com.bestseller.coffeestore.admin.dto.ItemType;
 import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
+import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
 import com.bestseller.coffeestore.admin.model.Drink;
 import com.bestseller.coffeestore.admin.model.Order;
 import com.bestseller.coffeestore.admin.model.Topping;
@@ -87,15 +86,24 @@ public class AdminMenuServiceImpl implements AdminMenuService {
     }
 
 	@Override
-	public void orderReport() {
+	public OrderReportResponse orderReport() {
 		List<Order> orderList = orderRepository.findAll();
 
-		var results = orderList.stream()
-				.collect(Collectors.groupingBy(Order::getDrink)).entrySet().stream()
-				.collect(Collectors.toMap(Entry::getKey, entry-> entry.getValue().stream().map(Order::getToppings)
-						.flatMap(Collection::stream).toList()));
+//		var results = orderList.stream()
+//				.collect(Collectors.groupingBy(Order::getDrink)).entrySet().stream()
+//				.collect(Collectors.toMap(Entry::getKey, entry-> entry.getValue().stream().map(Order::getToppings)
+//						.flatMap(Collection::stream).toList()));
+//
+//		Map<Drink, Topping> responses = new HashMap<>();
+//		results.forEach((drink, toppings) -> {
+//			Topping topping = mostCommon(results.values().stream().flatMap(Collection::stream).toList());
+//			responses.put(drink, topping);
+//		});
+//
+//		OrderReportResponse response = new OrderReportResponse();
+//		response.setOrderReports(responses);
 
-		mostCommon(results.values().stream().flatMap(Collection::stream).toList());
+		return null;
 	}
 
 	private Topping mostCommon(List<Topping> list) {

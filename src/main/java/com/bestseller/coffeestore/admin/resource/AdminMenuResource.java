@@ -29,28 +29,28 @@ public class AdminMenuResource {
 	@PostMapping
 	ResponseEntity<GeneralResponse> create(@RequestBody @Valid MenuItemRequest item) {
 		adminMenuService.addItem(item);
-		log.info("add a menu item successfully");
+		log.info("gonna add a menu item {}", item.getId());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PutMapping
 	ResponseEntity<GeneralResponse> update(@RequestBody @Valid MenuItemRequest item) {
 		adminMenuService.updateItem(item);
-		log.info("update menu item successfully");
+		log.info("gonna update menu item {}", item.getId());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@DeleteMapping()
-	ResponseEntity<GeneralResponse> delete(@RequestBody MenuItemRequest menuItemRequest) {
-		adminMenuService.deleteItem(menuItemRequest);
-		log.info("delete from menu item successfully");
+	ResponseEntity<GeneralResponse> delete(@RequestBody MenuItemRequest item) {
+		adminMenuService.deleteItem(item);
+		log.info("gonna delete from menu item {}", item.getId());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PostMapping("/order-report")
 	ResponseEntity<OrderReportResponse> getOrderReports() {
 		adminMenuService.orderReport();
-		log.info("delete from menu item successfully");
+		log.info("gonna get order report");
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

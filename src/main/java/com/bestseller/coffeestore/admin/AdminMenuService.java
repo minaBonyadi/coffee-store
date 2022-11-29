@@ -1,6 +1,7 @@
 package com.bestseller.coffeestore.admin;
 
 import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
+import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
 
 public interface AdminMenuService {
 
@@ -10,5 +11,5 @@ public interface AdminMenuService {
 
     void deleteItem(MenuItemRequest item);
 
-	void orderReport();
+	OrderReportResponse orderReport();
 }
