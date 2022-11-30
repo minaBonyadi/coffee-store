@@ -15,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Topping {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
 
 	String name;

@@ -6,8 +6,8 @@ public interface DiscountService {
 
     Double promoteTwentyFivePercentDiscount(Double totalAmount);
 
-    Double promoteLowerAmountOrderItemDiscount(Double totalAmount, List<Double> amounts);
+    Double getLowerAmountOrderItemDiscount(Double totalAmount, List<Double> amounts);
 
-    Double promoteLowestDiscount(Double totalAmount, List<Double> amounts);
+    Double getLowestDiscount(Double totalAmount, List<Double> amounts);
 
 }

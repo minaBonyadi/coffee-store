@@ -1,4 +1,4 @@
-package com.bestseller.coffeestore.rest_response;
+package com.bestseller.coffeestore.restresponse;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

@@ -1,13 +1,13 @@
-# mina bonyadi
+# Mina Bonyadi
 
-## User service Model
+## Coffee-store service Model
 
 ## Description
-This project is a orders crud services including an Api.
+This project is a coffee-store is based on Api for both side admin and customer.
 
 ## files
 ```
-clone https://github.com/minaBonyadi/perseus.git
+https://github.com/minaBonyadi/coffee-store
 ```
 
 ## tools
@@ -15,44 +15,40 @@ clone https://github.com/minaBonyadi/perseus.git
 - [ ] Java 17
 - [ ] Maven
 - [ ] Spring Boot
-- [ ] Redis
+- [ ] Mysql
 - [ ] Git
-- [ ] Swagger-ui
-- [ ] Openapi
-- [ ] Jupiter
-- [ ] Mockito
 - [ ] Docker
 - [ ] Docker Compose
 
 ## Test and Deploy
 
-- run application main method in (com.bestseller.coffeestore.ChallengeApplication) and run docker-compose.yml to
+- run application main method in (com.bestseller.coffeestore.CoffeeStoreApplication) and run docker-compose.yml to
 up mysql database
 
 ***
 
 ## Features
 
-- User services within a container based environment (Docker)
-- providing documentation of my User services API endpoints
-- User services are covering by integration tests
+- Order services within a container based environment (Docker)
+- providing documentation of Order services API endpoints
+- Order services are covering by integration tests
 
 ## User Model
 
-User:
+Drink:
 - id: long
-- lastName: string
-- firstName: string
-- drinks: List of Email
-- toppings: List of PhoneNumber
+- name: string
+- price: double
 
-Email:
-- id: int
-- mail: string
+Topping:
+- id: long
+- name: string
+- price: double
 
-PhoneNumber:
-- id: int
-- number: string
+Orders:
+- id: long
+- drink: drink model
+- toppings: topping list
 
 ## Installation
 
@@ -61,21 +57,17 @@ PhoneNumber:
 ## Usage
 
 you can use it by postman service call they are services which implemented :
--[ ] Post -> /users/create   -> input (orders dto)
--[ ] Get -> /users/{id}      -> input (orders id)
--[ ] Get -> /users/spec      -> input (first name, last name)
--[ ] Put -> /{id}/phone-number -> input (orders id, phone number dto)
--[ ] Put -> /{id}/drink -> input (drink dto)
--[ ] Delete -> /users/{id} -> input (orders dto)
-
-all outputs are orders dto except delete service
+- [ ] Post -> /orders/register   -> input (RegisterOrdersRequest)
+- [ ] Post -> /admin/menu     -> input (MenuItemRequest)
+- [ ] Put -> /admin/menu     -> input (MenuItemRequest)
+- [ ] Delete -> /admin/menu -> input (MenuItemRequest)
+- [ ] Post -> /admin/menu/order-report -> without input
 
 ## Roadmap
-- add spring security
-- add swagger UI
+- add User Model
 - unit test
 
 ## Authors and acknowledgment
 
-This is Mina. I am a java back-end developer which have more than five years experience in this career,
+This is Mina. I am a java back-end developer which have more than six years experience in this career,
 and I have a bachelor degree in software engineering.

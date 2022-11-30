@@ -1,6 +1,6 @@
 package come.code.challenge.integration;
 
-import com.bestseller.coffeestore.ChallengeApplication;
+import com.bestseller.coffeestore.CoffeeStoreApplication;
 import com.bestseller.coffeestore.admin.model.Drink;
 import com.bestseller.coffeestore.admin.model.Topping;
 import com.bestseller.coffeestore.admin.repository.DrinkRepository;
@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = ChallengeApplication.class)
+@SpringBootTest(classes = CoffeeStoreApplication.class)
 @AutoConfigureMockMvc
 class AdminServiceIT {
 
@@ -191,6 +191,7 @@ class AdminServiceIT {
 	}
 
 	@Test
+	@Description("get Order Reports successfully")
 	void getOrderReportsTest() throws Exception {
 		//************************
 		//          Given

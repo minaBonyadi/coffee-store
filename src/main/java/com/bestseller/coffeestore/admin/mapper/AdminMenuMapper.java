@@ -1,4 +1,4 @@
-package com.bestseller.coffeestore.admin;
+package com.bestseller.coffeestore.admin.mapper;
 
 import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
 import com.bestseller.coffeestore.admin.model.Drink;

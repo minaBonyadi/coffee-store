@@ -1,16 +1,7 @@
 package com.bestseller.coffeestore.admin.service;
 
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import com.bestseller.coffeestore.admin.AdminMenuMapper;
-import com.bestseller.coffeestore.admin.AdminMenuService;
+import com.bestseller.coffeestore.admin.mapper.AdminMenuMapper;
 import com.bestseller.coffeestore.admin.dto.ItemType;
 import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
 import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
@@ -20,11 +11,16 @@ import com.bestseller.coffeestore.admin.model.Topping;
 import com.bestseller.coffeestore.admin.repository.DrinkRepository;
 import com.bestseller.coffeestore.admin.repository.OrderRepository;
 import com.bestseller.coffeestore.admin.repository.ToppingRepository;
+import com.bestseller.coffeestore.exception.DrinkNotFoundException;
+import com.bestseller.coffeestore.exception.ToppingNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -37,6 +33,10 @@ public class AdminMenuServiceImpl implements AdminMenuService {
 
 	private final OrderRepository orderRepository;
 
+    /**
+     *
+     * @param item menu item
+     */
     @Override
     public void addItem(MenuItemRequest item) {
         log.info("gonna add an item to a menu");
@@ -52,58 +52,84 @@ public class AdminMenuServiceImpl implements AdminMenuService {
         }
     }
 
+    /**
+     *
+     * @param item menu item
+     * @throws DrinkNotFoundException throw exception if drink not exist
+     * @throws ToppingNotFoundException throw exception if topping not exist
+     */
     @Override
-    public void updateItem(MenuItemRequest item) {
+    public void updateItem(MenuItemRequest item) throws DrinkNotFoundException, ToppingNotFoundException {
 		log.info("gonna update a menu item");
 
         if (item.getItemType().equals(ItemType.DRINK)) {
-            Drink drink = drinkRepository.findById(item.getId()).orElseThrow();
+            Drink drink = drinkRepository.findById(item.getId()).orElseThrow(DrinkNotFoundException::new);
             drinkRepository.save(mapper.mapDrinkMenuToDrink(item, drink));
 
             log.info("update a drink item in a menu by id {}, name {}", drink.getId(),
                     drink.getName());
 
         } else if (item.getItemType().equals(ItemType.TOPPING)) {
-            Topping topping = toppingRepository.findById(item.getId()).orElseThrow();
+            Topping topping = toppingRepository.findById(item.getId()).orElseThrow(ToppingNotFoundException::new);
 			toppingRepository.save(mapper.mapToppingMenuToTopping(item, topping));
 			log.info("update a topping item in a menu by id {}, name {}",
                     topping.getId(), topping.getName());
         }
     }
+
+    /**
+     *
+     * @param item menu item
+     * @throws DrinkNotFoundException throw exception if drink not exist
+     * @throws ToppingNotFoundException throw exception if topping not exist
+     */
 	@Override
-    public void deleteItem(MenuItemRequest item) {
+    public void deleteItem(MenuItemRequest item) throws DrinkNotFoundException, ToppingNotFoundException {
 		log.info("gonna delete a menu item");
 
 		if (item.getItemType().equals(ItemType.DRINK)) {
-            Drink drink = drinkRepository.findById(item.getId()).orElseThrow();
+            Drink drink = drinkRepository.findById(item.getId()).orElseThrow(DrinkNotFoundException::new);
             drinkRepository.delete(drink);
             log.info("delete a drink item in a menu by id {}, name {}", drink.getId(),
                     drink.getName());
 
         } else if(item.getItemType().equals(ItemType.TOPPING)) {
-            Topping topping = toppingRepository.findById(item.getId()).orElseThrow();
+            Topping topping = toppingRepository.findById(item.getId()).orElseThrow(ToppingNotFoundException::new);
             toppingRepository.delete(topping);
             log.info("delete a topping item in a menu by id {}, name {}", topping.getId(),
                     topping.getName());
         }
     }
 
-	@Transactional
+    /**
+     *
+     * @return order report response based on most common topping for a specific drink
+     */
+    @Transactional
 	@Override
 	public OrderReportResponse orderReport() {
+        log.info("gonna get order reports for admin user");
 		List<Orders> ordersList = orderRepository.getOrdersReports();
 
-		var results = ordersList.stream().collect(Collectors.toMap(Orders::getDrink, Orders::getToppings));
+		var results =
+                ordersList.stream().collect(Collectors.toMap(Orders::getDrink, Orders::getToppings));
 
 		Map<Drink, Topping> responses = new HashMap<>();
 		results.forEach((drink, toppings) -> {
-			Topping topping = mostCommon(results.values().stream().flatMap(Collection::stream).toList());
-			responses.put(drink, topping);
+
+            List<Topping> repeatedToppings = results.values().stream().flatMap(Collection::stream)
+                    .filter(topping -> Collections.frequency(results.values(),
+                    topping) > 1).toList();
+
+			if (!repeatedToppings.isEmpty()) {
+                responses.put(drink, mostCommon(repeatedToppings));
+            }
 		});
 
 		OrderReportResponse response = new OrderReportResponse();
 		response.setOrderReports(responses);
 
+        log.info("gonna send order reports for admin user");
 		return response;
 	}
 

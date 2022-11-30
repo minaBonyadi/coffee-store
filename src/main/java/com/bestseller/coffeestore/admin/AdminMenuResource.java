@@ -1,9 +1,11 @@
-package com.bestseller.coffeestore.admin.resource;
+package com.bestseller.coffeestore.admin;
 
-import com.bestseller.coffeestore.admin.AdminMenuService;
+import com.bestseller.coffeestore.admin.service.AdminMenuService;
 import com.bestseller.coffeestore.admin.dto.GeneralResponse;
 import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
 import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
+import com.bestseller.coffeestore.exception.DrinkNotFoundException;
+import com.bestseller.coffeestore.exception.ToppingNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,14 +30,16 @@ public class AdminMenuResource {
 	}
 
 	@PutMapping
-	ResponseEntity<GeneralResponse> update(@RequestBody @Valid MenuItemRequest item) {
+	ResponseEntity<GeneralResponse> update(@RequestBody @Valid MenuItemRequest item)
+			throws DrinkNotFoundException, ToppingNotFoundException {
 		adminMenuService.updateItem(item);
 		log.info("gonna update menu item {}", item.getId());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@DeleteMapping()
-	ResponseEntity<GeneralResponse> delete(@RequestBody MenuItemRequest item) {
+	ResponseEntity<GeneralResponse> delete(@RequestBody MenuItemRequest item)
+			throws DrinkNotFoundException, ToppingNotFoundException {
 		adminMenuService.deleteItem(item);
 		log.info("gonna delete from menu item {}", item.getId());
 		return new ResponseEntity<>(HttpStatus.OK);

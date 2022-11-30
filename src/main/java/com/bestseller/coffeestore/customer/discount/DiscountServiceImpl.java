@@ -10,22 +10,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DiscountServiceImpl implements DiscountService {
 
-
+    /**
+     * 
+     * @param totalAmount total amount
+     * @return final amount after discount
+     */
     @Override
     public Double promoteTwentyFivePercentDiscount(Double totalAmount) {
-
         return totalAmount - (totalAmount * 0.25);
     }
 
+    /**
+     * 
+     * @param totalAmount total amount
+     * @param amounts all order items amount
+     * @return final amount after discount
+     */
     @Override
-    public Double promoteLowerAmountOrderItemDiscount(Double totalAmount, List<Double> amounts) {
-        return totalAmount - amounts.stream().mapToDouble(Double::doubleValue).min().getAsDouble();
+    public Double getLowerAmountOrderItemDiscount(Double totalAmount, List<Double> amounts) {
+        return totalAmount - amounts.stream().mapToDouble(Double::doubleValue).min().orElse(0.0);
     }
 
+    /**
+     * 
+     * @param totalAmount total amount
+     * @param amounts all order items amount
+     * @return final amount after discount
+     */
     @Override
-    public Double promoteLowestDiscount(Double totalAmount, List<Double> amounts) {
+    public Double getLowestDiscount(Double totalAmount, List<Double> amounts) {
         Double twentyFivePercentPromote = promoteTwentyFivePercentDiscount(totalAmount);
-        Double LowerItemDiscountPromote = promoteLowerAmountOrderItemDiscount(totalAmount, amounts);
+        Double LowerItemDiscountPromote = getLowerAmountOrderItemDiscount(totalAmount, amounts);
         return twentyFivePercentPromote > LowerItemDiscountPromote ? twentyFivePercentPromote : LowerItemDiscountPromote;
     }
 }
