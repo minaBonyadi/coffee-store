@@ -1,11 +1,13 @@
 package com.bestseller.coffeestore.admin.service;
 
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.bestseller.coffeestore.admin.AdminMenuMapper;
 import com.bestseller.coffeestore.admin.AdminMenuService;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -85,25 +88,23 @@ public class AdminMenuServiceImpl implements AdminMenuService {
         }
     }
 
+	@Transactional
 	@Override
 	public OrderReportResponse orderReport() {
-		List<Order> orderList = orderRepository.findAll();
+		List<Order> orderList = orderRepository.getOrdersReports();
 
-//		var results = orderList.stream()
-//				.collect(Collectors.groupingBy(Order::getDrink)).entrySet().stream()
-//				.collect(Collectors.toMap(Entry::getKey, entry-> entry.getValue().stream().map(Order::getToppings)
-//						.flatMap(Collection::stream).toList()));
-//
-//		Map<Drink, Topping> responses = new HashMap<>();
-//		results.forEach((drink, toppings) -> {
-//			Topping topping = mostCommon(results.values().stream().flatMap(Collection::stream).toList());
-//			responses.put(drink, topping);
-//		});
-//
-//		OrderReportResponse response = new OrderReportResponse();
-//		response.setOrderReports(responses);
+		var results = orderList.stream().collect(Collectors.toMap(Order::getDrink, Order::getToppings));
 
-		return null;
+		Map<Drink, Topping> responses = new HashMap<>();
+		results.forEach((drink, toppings) -> {
+			Topping topping = mostCommon(results.values().stream().flatMap(Collection::stream).toList());
+			responses.put(drink, topping);
+		});
+
+		OrderReportResponse response = new OrderReportResponse();
+		response.setOrderReports(responses);
+
+		return response;
 	}
 
 	private Topping mostCommon(List<Topping> list) {

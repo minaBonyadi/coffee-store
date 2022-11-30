@@ -10,3 +10,9 @@ services:
       MYSQL_ROOT_PASSWORD: 'password'
     ports:
       - "3306:3306"
+  coffee-store:
+    container_name: coffee-store
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: coffee-store:latest

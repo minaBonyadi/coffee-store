@@ -28,5 +28,4 @@ public class Drink {
 	String name;
 
 	BigInteger price;
-
 }

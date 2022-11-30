@@ -94,7 +94,8 @@ class AdminServiceIT {
 		//          Given
 		//************************
 		drinkRepository.deleteAll();
-		String requestBody = "{\"id\":"+createDrink().getId()+",\"name\":\"latte\",\"price\":5,\"itemType\":\"DRINK\"}";
+		Drink drink = drinkRepository.save(createDrink());
+		String requestBody = "{\"id\":"+drink.getId()+",\"name\":\"latte\",\"price\":5,\"itemType\":\"DRINK\"}";
 
 		//************************
 		//          WHEN
@@ -116,7 +117,8 @@ class AdminServiceIT {
 		//          Given
 		//************************
 		toppingRepository.deleteAll();
-		String requestBody = "{\"id\":"+createTopping().getId()+",\"name\":\"latte\",\"price\":5,\"itemType\":\"TOPPING\"}";
+		Topping topping = toppingRepository.save(createTopping("suger"));
+		String requestBody = "{\"id\":"+topping.getId()+",\"name\":\"suger\",\"price\":5,\"itemType\":\"TOPPING\"}";
 
 		//************************
 		//          WHEN
@@ -138,8 +140,8 @@ class AdminServiceIT {
 		//          Given
 		//************************
 		toppingRepository.deleteAll();
-		long id = createTopping().getId();
-		String requestBody = "{\"id\":"+id+",\"name\":\"Cinnamon\",\"price\":5,\"itemType\":\"TOPPING\"}";
+		Topping topping = toppingRepository.save(createTopping("honey"));
+		String requestBody = "{\"id\":"+topping.getId()+",\"name\":\"Cinnamon\",\"price\":5,\"itemType\":\"TOPPING\"}";
 
 		//************************
 		//          WHEN
@@ -153,7 +155,7 @@ class AdminServiceIT {
 		//************************
 		//          THEN
 		//************************
-		assertThat(toppingRepository.findById(id)).isEmpty();
+		assertThat(toppingRepository.findById(topping.getId())).isEmpty();
 	}
 
 	@Test
@@ -162,8 +164,8 @@ class AdminServiceIT {
 		//          Given
 		//************************
 		drinkRepository.deleteAll();
-		long id = createDrink().getId();
-		String requestBody = "{\"id\":"+id+",\"name\":\"latte\",\"price\":5,\"itemType\":\"DRINK\"}";
+		Drink drink = drinkRepository.save(createDrink());
+		String requestBody = "{\"id\":"+drink.getId()+",\"name\":\"latte\",\"price\":5,\"itemType\":\"DRINK\"}";
 
 		//************************
 		//          WHEN
@@ -177,7 +179,7 @@ class AdminServiceIT {
 		//************************
 		//          THEN
 		//************************
-		assertThat(drinkRepository.findById(id)).isEmpty();
+		assertThat(drinkRepository.findById(drink.getId())).isEmpty();
 	}
 
 	@Test
@@ -185,6 +187,10 @@ class AdminServiceIT {
 		//************************
 		//          Given
 		//************************
+		orderRepository.deleteAll();
+		drinkRepository.deleteAll();
+		toppingRepository.deleteAll();
+
 		createSomeOrders();
 		//************************
 		//          WHEN
@@ -205,44 +211,41 @@ class AdminServiceIT {
 		Drink drink = new Drink();
 		drink.setPrice(new BigInteger("5"));
 		drink.setName("Mocka");
-		drinkRepository.save(drink);
 		return drink;
 	}
 
-	private Topping createTopping() {
+	private Topping createTopping(String name) {
 		Topping topping = new Topping();
 		topping.setPrice(new BigInteger("2"));
-		topping.setName("Honey");
-		toppingRepository.save(topping);
+		topping.setName(name);
 
 		return topping;
 	}
 
 	private void createSomeOrders() {
 		Set<Topping> toppings1 = new HashSet<>();
-		toppings1.add(createTopping());
-		toppings1.add(createTopping());
-		toppings1.add(createTopping());
+		toppings1.add(createTopping("honey"));
+		toppings1.add(createTopping("syrup"));
+		toppings1.add(createTopping("syrup"));
+
+		Drink drink1 = new Drink();
+		drink1.setPrice(new BigInteger("5"));
+		drink1.setName("Moca");
+		drinkRepository.save(drink1);
+//		toppingRepository.saveAll(toppings1);
 
 		Order order1 = new Order();
-		order1.setDrink(createDrink());
 		order1.setAmount(new BigInteger("11"));
 		order1.setToppings(toppings1);
 		order1.setDiscount(BigInteger.ZERO);
-
+		order1.setDrink(drink1);
 		orderRepository.save(order1);
-
-//		List<Topping> toppings2 = new ArrayList<>();
-//		toppings2.add(createTopping());
-//		toppings2.add(createTopping());
-//		toppings2.add(createTopping());
-//
+//-------------------------------------------------//
 //		Order order2 = new Order();
-//
-//		order2.setDrink(createDrink());
-//		order2.setAmount(new BigInteger("9"));
+//		order2.setAmount(new BigInteger("11"));
 //		order2.setToppings(toppings1);
-//
+//		order2.setDiscount(BigInteger.ZERO);
+//		order2.setDrink(drink1);
 //		orderRepository.save(order2);
 	}
 }
