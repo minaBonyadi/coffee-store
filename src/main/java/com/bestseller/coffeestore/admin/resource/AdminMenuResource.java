@@ -1,22 +1,16 @@
 package com.bestseller.coffeestore.admin.resource;
 
-import javax.validation.Valid;
-
 import com.bestseller.coffeestore.admin.AdminMenuService;
 import com.bestseller.coffeestore.admin.dto.GeneralResponse;
 import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
 import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -49,8 +43,7 @@ public class AdminMenuResource {
 
 	@PostMapping("/order-report")
 	ResponseEntity<OrderReportResponse> getOrderReports() {
-		adminMenuService.orderReport();
 		log.info("gonna get order report");
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(adminMenuService.orderReport(), HttpStatus.OK);
 	}
 }

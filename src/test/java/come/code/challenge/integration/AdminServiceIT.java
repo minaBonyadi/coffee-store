@@ -1,18 +1,13 @@
 package come.code.challenge.integration;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.bestseller.coffeestore.ChallengeApplication;
 import com.bestseller.coffeestore.admin.model.Drink;
-import com.bestseller.coffeestore.admin.model.Order;
 import com.bestseller.coffeestore.admin.model.Topping;
 import com.bestseller.coffeestore.admin.repository.DrinkRepository;
 import com.bestseller.coffeestore.admin.repository.OrderRepository;
 import com.bestseller.coffeestore.admin.repository.ToppingRepository;
+import jdk.jfr.Description;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,18 +16,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = ChallengeApplication.class)
 @AutoConfigureMockMvc
 class AdminServiceIT {
 
-	final java.lang.String ADMIN_API= "/admin/menu";
+	final String ADMIN_API= "/admin/menu";
+	final String ORDER_API= "/orders/register";
+	final String ORDER_REPORT = "/admin/menu/order-report";
 
-    @Autowired
+	@Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -45,11 +40,12 @@ class AdminServiceIT {
 	private OrderRepository orderRepository;
 
 	@Test
+	@Description("add a new drink item by admin successfully")
     void createAdminItemDrinkTest() throws Exception {
         //************************
         //          Given
         //************************
-		drinkRepository.deleteAll();
+		cleanDB();
 		String requestBody = "{\"name\":\"latte\",\"price\":50,\"itemType\":\"DRINK\"}";
 
         //************************
@@ -67,11 +63,12 @@ class AdminServiceIT {
     }
 
     @Test
-    void addToppingItemToMenuTest() throws Exception {
+	@Description("add a new topping item by admin successfully")
+	void addToppingItemToMenuTest() throws Exception {
 		//************************
 		//          Given
 		//************************
-		toppingRepository.deleteAll();
+		cleanDB();
 		String requestBody = "{\"name\":\"latte\",\"price\":50,\"itemType\":\"TOPPING\"}";
 
 		//************************
@@ -89,19 +86,17 @@ class AdminServiceIT {
     }
 
 	@Test
+	@Description("update an exist drink item by admin successfully")
 	void updateDrinkItemToMenuTest() throws Exception {
 		//************************
 		//          Given
 		//************************
-		drinkRepository.deleteAll();
-		Drink drink = drinkRepository.save(createDrink());
-		String requestBody = "{\"id\":"+drink.getId()+",\"name\":\"latte\",\"price\":5,\"itemType\":\"DRINK\"}";
+		cleanDB();
+		Drink drink = createDrink("latte", 5.0);
+		String requestBody = "{\"id\":"+drink.getId()+",\"name\":\"big latte\",\"price\":3,\"itemType\":\"DRINK\"}";
 
 		//************************
 		//          WHEN
-		//************************
-		//************************
-		//          THEN
 		//************************
 		mockMvc.perform(put(ADMIN_API)
 						.content(requestBody)
@@ -109,22 +104,26 @@ class AdminServiceIT {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andReturn();
+		//************************
+		//          THEN
+		//************************
+		Drink updateDrink = drinkRepository.findById(drink.getId()).get();
+		assertThat(updateDrink.getPrice()).isEqualTo(3.0);
+		assertThat(updateDrink.getName()).isEqualTo("big latte");
 	}
 
 	@Test
+	@Description("update an topping item by admin successfully")
 	void updateToppingItemToMenuTest() throws Exception {
 		//************************
 		//          Given
 		//************************
 		toppingRepository.deleteAll();
-		Topping topping = toppingRepository.save(createTopping("suger"));
-		String requestBody = "{\"id\":"+topping.getId()+",\"name\":\"suger\",\"price\":5,\"itemType\":\"TOPPING\"}";
+		Topping topping = createTopping("suger", 1.0);
+		String requestBody = "{\"id\":"+topping.getId()+",\"name\":\"brown suger\",\"price\":2.0,\"itemType\":\"TOPPING\"}";
 
 		//************************
 		//          WHEN
-		//************************
-		//************************
-		//          THEN
 		//************************
 		mockMvc.perform(put(ADMIN_API)
 						.content(requestBody)
@@ -132,16 +131,24 @@ class AdminServiceIT {
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andReturn();
+
+		//************************
+		//          THEN
+		//************************
+		Topping updateTopping = toppingRepository.findById(topping.getId()).get();
+		assertThat(updateTopping.getPrice()).isEqualTo(2.0);
+		assertThat(updateTopping.getName()).isEqualTo("brown suger");
 	}
 
 	@Test
+	@Description("delete an exist topping item by admin successfully")
 	void deleteToppingItemToMenuTest() throws Exception {
 		//************************
 		//          Given
 		//************************
 		toppingRepository.deleteAll();
-		Topping topping = toppingRepository.save(createTopping("honey"));
-		String requestBody = "{\"id\":"+topping.getId()+",\"name\":\"Cinnamon\",\"price\":5,\"itemType\":\"TOPPING\"}";
+		Topping topping = createTopping("cinnamon", 2.0);
+		String requestBody = "{\"id\":"+topping.getId()+",\"name\":\"cinnamon\",\"price\":2.0,\"itemType\":\"TOPPING\"}";
 
 		//************************
 		//          WHEN
@@ -159,13 +166,14 @@ class AdminServiceIT {
 	}
 
 	@Test
+	@Description("delete an exist drink item by admin successfully")
 	void deleteDrinkItemToMenuTest() throws Exception {
 		//************************
 		//          Given
 		//************************
 		drinkRepository.deleteAll();
-		Drink drink = drinkRepository.save(createDrink());
-		String requestBody = "{\"id\":"+drink.getId()+",\"name\":\"latte\",\"price\":5,\"itemType\":\"DRINK\"}";
+		Drink drink = createDrink("latte", 6.0);
+		String requestBody = "{\"id\":"+drink.getId()+",\"name\":\"latte\",\"price\":6.0,\"itemType\":\"DRINK\"}";
 
 		//************************
 		//          WHEN
@@ -187,15 +195,28 @@ class AdminServiceIT {
 		//************************
 		//          Given
 		//************************
-		orderRepository.deleteAll();
-		drinkRepository.deleteAll();
-		toppingRepository.deleteAll();
+		cleanDB();
+		Drink drink1 = createDrink("big latte", 7.0);
+		Drink drink2 = createDrink("moca", 4.0);
+		Drink drink3 = createDrink("tea", 2.0);
 
-		createSomeOrders();
+		Topping topping1 = createTopping("suger", 1.0);
+
+		String requestBody = "{\"ordersList\":[{\"drink\":{\"id\":"+drink1.getId()+",\"name\":\"latte\",\"price\":7.0}," +
+				"\"toppings\":[{\"id\":"+topping1.getId()+",\"name\":\"honey\",\"price\":1.0}]}," +
+				"{\"drink\":{\"id\":"+drink2.getId()+",\"name\":\"moca\",\"price\":4.0},\"toppings\":[]}," +
+				"{\"drink\":{\"id\":"+drink3.getId()+",\"name\":\"tea\",\"price\":3.0},\"toppings\":[]}]}";
+
+		mockMvc.perform(post(ORDER_API)
+						.content(requestBody)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
 		//************************
 		//          WHEN
 		//************************
-		MvcResult result = mockMvc.perform(post(ADMIN_API+"/order-report")
+		MvcResult result = mockMvc.perform(post(ORDER_REPORT)
 						.contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -207,45 +228,23 @@ class AdminServiceIT {
 		assertThat(response).isNotBlank();
 	}
 
-	private Drink createDrink() {
+	private void cleanDB() {
+		orderRepository.deleteAll();
+		drinkRepository.deleteAll();
+		toppingRepository.deleteAll();
+	}
+
+	private Drink createDrink(String name, Double price) {
 		Drink drink = new Drink();
-		drink.setPrice(new BigInteger("5"));
-		drink.setName("Mocka");
-		return drink;
+		drink.setPrice(price);
+		drink.setName(name);
+		return drinkRepository.save(drink);
 	}
 
-	private Topping createTopping(String name) {
+	private Topping createTopping(String name, Double price) {
 		Topping topping = new Topping();
-		topping.setPrice(new BigInteger("2"));
+		topping.setPrice(price);
 		topping.setName(name);
-
-		return topping;
-	}
-
-	private void createSomeOrders() {
-		Set<Topping> toppings1 = new HashSet<>();
-		toppings1.add(createTopping("honey"));
-		toppings1.add(createTopping("syrup"));
-		toppings1.add(createTopping("syrup"));
-
-		Drink drink1 = new Drink();
-		drink1.setPrice(new BigInteger("5"));
-		drink1.setName("Moca");
-		drinkRepository.save(drink1);
-//		toppingRepository.saveAll(toppings1);
-
-		Order order1 = new Order();
-		order1.setAmount(new BigInteger("11"));
-		order1.setToppings(toppings1);
-		order1.setDiscount(BigInteger.ZERO);
-		order1.setDrink(drink1);
-		orderRepository.save(order1);
-//-------------------------------------------------//
-//		Order order2 = new Order();
-//		order2.setAmount(new BigInteger("11"));
-//		order2.setToppings(toppings1);
-//		order2.setDiscount(BigInteger.ZERO);
-//		order2.setDrink(drink1);
-//		orderRepository.save(order2);
+		return toppingRepository.save(topping);
 	}
 }

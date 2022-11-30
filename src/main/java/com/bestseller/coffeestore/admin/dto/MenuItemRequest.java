@@ -1,11 +1,9 @@
 package com.bestseller.coffeestore.admin.dto;
 
-import java.math.BigInteger;
+import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import lombok.Data;
 
 @Data
 public class MenuItemRequest {
@@ -16,7 +14,7 @@ public class MenuItemRequest {
     private String name;
 
     @NotNull(message = "price should fill")
-	private BigInteger price;
+	private Double price;
 
     @NotNull(message = "item type should fill")
     private ItemType itemType;

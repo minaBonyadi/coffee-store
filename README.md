@@ -3,7 +3,7 @@
 ## User service Model
 
 ## Description
-This project is a order crud services including an Api.
+This project is a orders crud services including an Api.
 
 ## files
 ```
@@ -61,14 +61,14 @@ PhoneNumber:
 ## Usage
 
 you can use it by postman service call they are services which implemented :
--[ ] Post -> /users/create   -> input (order dto)
--[ ] Get -> /users/{id}      -> input (order id)
+-[ ] Post -> /users/create   -> input (orders dto)
+-[ ] Get -> /users/{id}      -> input (orders id)
 -[ ] Get -> /users/spec      -> input (first name, last name)
--[ ] Put -> /{id}/phone-number -> input (order id, phone number dto)
+-[ ] Put -> /{id}/phone-number -> input (orders id, phone number dto)
 -[ ] Put -> /{id}/drink -> input (drink dto)
--[ ] Delete -> /users/{id} -> input (order dto)
+-[ ] Delete -> /users/{id} -> input (orders dto)
 
-all outputs are order dto except delete service
+all outputs are orders dto except delete service
 
 ## Roadmap
 - add spring security

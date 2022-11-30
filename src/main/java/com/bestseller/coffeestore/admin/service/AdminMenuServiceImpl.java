@@ -15,7 +15,7 @@ import com.bestseller.coffeestore.admin.dto.ItemType;
 import com.bestseller.coffeestore.admin.dto.MenuItemRequest;
 import com.bestseller.coffeestore.admin.dto.OrderReportResponse;
 import com.bestseller.coffeestore.admin.model.Drink;
-import com.bestseller.coffeestore.admin.model.Order;
+import com.bestseller.coffeestore.admin.model.Orders;
 import com.bestseller.coffeestore.admin.model.Topping;
 import com.bestseller.coffeestore.admin.repository.DrinkRepository;
 import com.bestseller.coffeestore.admin.repository.OrderRepository;
@@ -91,9 +91,9 @@ public class AdminMenuServiceImpl implements AdminMenuService {
 	@Transactional
 	@Override
 	public OrderReportResponse orderReport() {
-		List<Order> orderList = orderRepository.getOrdersReports();
+		List<Orders> ordersList = orderRepository.getOrdersReports();
 
-		var results = orderList.stream().collect(Collectors.toMap(Order::getDrink, Order::getToppings));
+		var results = ordersList.stream().collect(Collectors.toMap(Orders::getDrink, Orders::getToppings));
 
 		Map<Drink, Topping> responses = new HashMap<>();
 		results.forEach((drink, toppings) -> {
