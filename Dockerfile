@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM  openjdk:17-jre-slim
 
 # Add the application's jar to the container
 COPY target/coffee-store*.jar /app.jar

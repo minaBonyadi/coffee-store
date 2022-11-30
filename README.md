@@ -1,6 +1,6 @@
 # Mina Bonyadi
 
-## Coffee-store service Model
+## Coffee-Store Services
 
 ## Description
 This project is a coffee-store is based on Api for both side admin and customer.
@@ -33,7 +33,7 @@ up mysql database
 - providing documentation of Order services API endpoints
 - Order services are covering by integration tests
 
-## User Model
+## Coffee_Store Model
 
 Drink:
 - id: long
