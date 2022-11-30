@@ -3,7 +3,7 @@
 ## Coffee-Store Services
 
 ## Description
-This project is a coffee-store is based on Api for both side admin and customer.
+This project is a coffee-store, and it's based on Api for both side admin and customer.
 
 ## files
 ```
