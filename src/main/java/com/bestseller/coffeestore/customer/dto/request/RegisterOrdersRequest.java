@@ -9,5 +9,9 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterOrdersRequest {
+
+    String trackingCode;
+
     List<OrderRequest> ordersList;
+
 }

@@ -39,6 +39,22 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderReceiptResponse registerOrder(RegisterOrdersRequest registerOrdersRequest) {
         log.info("gonna register order");
+        List<Double> amounts = getComingOrderAmounts(registerOrdersRequest);
+
+        long drinkCount = registerOrdersRequest.getOrdersList().stream()
+                .map(OrderRequest::getDrink).count();
+
+        double totalAmount = amounts.stream().mapToDouble(Double::doubleValue).sum();
+
+        Double payableAmount = getTotalAmountAfterDiscountChecked(amounts.stream().
+                        filter(amount-> amount > 0.0).toList(),
+                drinkCount, totalAmount);
+
+        log.info("receipt for total amount {}, payable amount {} going to create", totalAmount, payableAmount);
+        return orderMapper.createReceiptResponse(registerOrdersRequest, totalAmount, payableAmount);
+    }
+
+    private List<Double> getComingOrderAmounts(RegisterOrdersRequest registerOrdersRequest) {
         List<Double> amounts =  new ArrayList<>();
         registerOrdersRequest.getOrdersList().forEach(order -> {
             Drink drink = drinkRepository.findById(order.getDrink().getId()).orElse(new Drink());
@@ -56,17 +72,7 @@ public class OrderServiceImpl implements OrderService {
             amounts.add(drinkPrice);
             amounts.add(toppingsPrice);
         });
-
-        long drinkCount = registerOrdersRequest.getOrdersList().stream().map(OrderRequest::getDrink).count();
-
-        double totalAmount = amounts.stream().mapToDouble(Double::doubleValue).sum();
-
-        Double payableAmount = getTotalAmountAfterDiscountChecked(amounts.stream().
-                        filter(amount-> amount > 0.0).toList(),
-                drinkCount, totalAmount);
-
-        log.info("receipt for total amount {}, payable amount {} going to create", totalAmount, payableAmount);
-        return orderMapper.createReceiptResponse(registerOrdersRequest, totalAmount, payableAmount);
+        return amounts;
     }
 
     /**

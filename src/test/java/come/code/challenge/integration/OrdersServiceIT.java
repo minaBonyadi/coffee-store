@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class OrdersServiceIT {
 
-    final String ORDER_API= "/orders/register";
+    final String ORDER_API = "/orders/register";
 
     @Autowired
     private MockMvc mockMvc;

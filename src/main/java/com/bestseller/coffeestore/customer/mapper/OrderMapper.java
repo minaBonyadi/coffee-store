@@ -6,15 +6,15 @@ import com.bestseller.coffeestore.admin.model.Topping;
 import com.bestseller.coffeestore.customer.dto.request.OrderRequest;
 import com.bestseller.coffeestore.customer.dto.request.RegisterOrdersRequest;
 import com.bestseller.coffeestore.customer.dto.response.OrderReceiptResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-@RequiredArgsConstructor
-public class OrderMapper {
+@Mapper
+public interface OrderMapper {
 
     /**
      *
@@ -22,38 +22,37 @@ public class OrderMapper {
      * @param toppings list of toppings
      * @return orders
      */
-    public Orders mapToOrder(Drink drink, List<Topping> toppings) {
-        Orders orders = new Orders();
-        orders.setDrink(drink);
-        orders.setToppings(toppings);
-
-        return orders;
-    }
+    @Mapping(target = "toppings", source = "toppings")
+    @Mapping(target = "drink", source = "drink")
+    Orders mapToOrder(Drink drink, List<Topping> toppings);
 
     /**
      *
-     * @param registerOrdersRequest register orders request
+     * @param request register orders request
      * @param totalAmount total amount
      * @param payableAmount payable amount
      * @return order receipt response
      */
-    public OrderReceiptResponse createReceiptResponse(RegisterOrdersRequest registerOrdersRequest,
-                                                     double totalAmount, double payableAmount) {
-        OrderReceiptResponse response = new OrderReceiptResponse();
+    @Mapping(target = "orderRequests", source = "request", qualifiedByName = "mapToOrderRequest")
+    @Mapping(target = "description", source = "totalAmount, payableAmount",
+            qualifiedByName = "getDescription")
+    @Mapping(target = "totalAmount", source = "totalAmount")
+    @Mapping(target = "payableAmount", source = "payableAmount")
+    @Mapping(target = "amountAfterDiscount", source = "payableAmount")
+    OrderReceiptResponse createReceiptResponse(RegisterOrdersRequest request,
+                                                       double totalAmount, double payableAmount);
 
+    @Named("getDescription")
+    default String getDescription(double totalAmount, double payableAmount) {
         if (totalAmount == payableAmount) {
-            response.setDescription("discount not included");
+            return "discount not included";
         } else {
-            response.setDescription("discount included");
+            return "discount included";
         }
-        response.setTotalAmount(totalAmount);
-        response.setAmountAfterDiscount(response.getTotalAmount() - payableAmount);
-        response.setPayableAmount(payableAmount);
-        response.setOrderRequests(mapToOrderRequest(registerOrdersRequest.getOrdersList()));
-        return response;
     }
 
-    private List<OrderRequest> mapToOrderRequest(List<OrderRequest> orderRequests) {
+    @Named("mapToOrderRequest")
+    default List<OrderRequest> mapToOrderRequest(List<OrderRequest> orderRequests) {
         List<OrderRequest> responseOrderRequest = new ArrayList<>();
         orderRequests.forEach(request -> {
             OrderRequest orderRequest = new OrderRequest();

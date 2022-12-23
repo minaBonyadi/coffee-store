@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderRequest {
-    String trackingCode;
 
     Drink drink;
 
